@@ -64,7 +64,12 @@ func New(options *Options) (Logger, error) {
 		cfg.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 		cfg.EncoderConfig.LineEnding = "\n\n"
 		cfg.EncoderConfig.TimeKey = ""
-		logger, err := cfg.Build(zap.AddCallerSkip(1), opts.ZapOption)
+		logger, err := func () (*zap.Logger, error){
+			if opts.ZapOption != nil {
+				return cfg.Build(zap.AddCallerSkip(1), opts.ZapOption)
+			}
+			return cfg.Build(zap.AddCallerSkip(1))
+		}()
 		if err != nil {
 			return nil, err
 		}
